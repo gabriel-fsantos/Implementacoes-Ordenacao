@@ -1,8 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <openssl/rand.h>
+#include <string.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-//se der erro de compilação usa esse comando no teminal
+//se der erro de compilação por culpa dessa biblioteca <openssl/rand.h>
+//use esse comando no teminal
 //sudo apt-get install libssl-dev
 
 typedef long TipoChave;
@@ -13,10 +16,10 @@ typedef struct TipoItem {
 } TipoItem;
 
 void Bubblesort(TipoItem *A, TipoIndice n){
-  TipoIndice i, j;
+  int i, j;
   TipoItem aux;
-  for (j = 0; j < n-1; j++){
-    for (i = 0; i < n-1; i++){
+  for (j = 1; j <= n-1; j++){
+    for (i = 1; i <= n-1; i++){
       if (A[i].Chave > A[i+1].Chave){
         aux = A[i];
         A[i] = A[i+1];
@@ -113,7 +116,7 @@ void Constroi(TipoItem *A, TipoIndice n){
 void Heapsort(TipoItem *A, TipoIndice n){
   TipoIndice Esq, Dir;
   TipoItem x;
-  Constroi(A, n);  /* constroi o heap */
+  Constroi(A, n);
   Esq = 1;  
   Dir = n;
   while (Dir > 1){
@@ -156,7 +159,7 @@ void Mergesort(TipoItem *A, int i, int j){
     m = (i + j - 1) / 2;
     Mergesort(A, i, m);
     Mergesort(A, m + 1, j);
-    Merge(A, i, m, j); /*Intercala A[i..m] e A[m+1..j] em A[i..j] */
+    Merge(A, i, m, j);
   }
 }
 
@@ -205,15 +208,15 @@ void Permut( TipoItem *A, int n){
 }
 
 int main(int argc, char *argv[]){
-  int n = 20, i;
+  int n = 10, i;
   TipoItem A[n], B[n];
 
   for (i = 1; i <= n; i++) {
     A[i].Chave = i;
   }
 
-  Permut (A,n);
-  Copia (A,B,n);
+  Permut(A,n);
+  Copia(A,B,n);
  
   printf("Desordenado : \n");
   Imprime(A, n);
@@ -246,7 +249,6 @@ int main(int argc, char *argv[]){
   printf("Mergesort  ");
   Mergesort(B, 1, n);
   Testa(B, n);
-  Copia(A, B, n);
 
   return 0;
 }
