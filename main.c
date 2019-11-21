@@ -1,8 +1,8 @@
-#include <unistd.h>
-#include <getopt.h>
-#include <string.h>
+#include <sys/resource.h>
 #include <stdlib.h>
-#include <limits.h>
+#include <string.h>
+#include <getopt.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <time.h>
 
@@ -17,7 +17,7 @@ typedef long TipoChave;
 typedef int TipoIndice;
 typedef struct TipoItem {
   TipoChave Chave;
-  /* outros componentes */
+  /* outros componentes */  // FALTANDO
 } TipoItem;
 
 void Bubblesort(TipoItem *A, TipoIndice n){
@@ -59,13 +59,16 @@ void Selecao(TipoItem *A, TipoIndice n){
         Min = j;
       }
     }
-    x = A[Min]; A[Min] = A[i]; A[i] = x;
+    x = A[Min];
+    A[Min] = A[i];
+    A[i] = x;
   }
 }
 
 void Particao(TipoIndice Esq, TipoIndice Dir, TipoIndice *i, TipoIndice *j, TipoItem *A){
   TipoItem x, w;
-  *i = Esq;  *j = Dir;
+  *i = Esq;
+  *j = Dir;
   x = A[(*i + *j) / 2]; /* obtem o pivo x */
   do{
     while (x.Chave > A[*i].Chave) (*i)++;
@@ -184,32 +187,34 @@ void Copia(TipoItem *Fonte, TipoItem *Destino, TipoIndice n){
 void Testa(TipoItem *V, TipoIndice n){
   for (int i = 2; i <= n; i++) {
     if (V[i].Chave < V[i-1].Chave) {
-      printf("ERRO: ");
-      Imprime(V, n);
+      printf("ERRO\n");
       return;
     }
   }
-  printf("OK:\n");
-  Imprime(V, n);
+  printf("OK\n");
 }
 
-double aleatorio(){
-  srand(time(NULL));
-  double resultado = (double) rand()/INT_MAX;
-  if(resultado > 1.0){
-    resultado = 1.0;
-  }
-  return resultado;
-}
-
-void Permuta( TipoItem *A, int n){
-  int i,j;
-  TipoItem b;
-  for(int i = n-1; i > 0; i--){
-    j = (i * aleatorio()) + 1;
-    b = A[i];
+void troca(TipoItem *A, int i, int j){
+    TipoItem aux;
+    aux = A[i];
     A[i] = A[j];
-    A[j] = b;
+    A[j] = aux;
+}
+
+void embaralhar(TipoItem *A, int n){
+  srand(time(NULL));
+  for (int i = 1; i <= n; i++){
+    int r = 1 + rand() % n;
+    troca(A, i, r);
+  }
+}
+
+void embaralhar20(TipoItem *A, int n){
+  srand(time(NULL));
+  int m = (int) (n * 0.2)/2;;
+  for (int i = 1; i <= m; i++){
+    int r = 1 + rand() % n;
+    troca(A, i, r);
   }
 }
 
@@ -220,22 +225,28 @@ void geraCrescente(TipoItem *A, int n){
 }
 
 void geraDecrescente(TipoItem *A, int n){
+  int j = 1; 
   for (int i = n; i >= 1; i--) {
-    A[i].Chave = i;
+    A[i].Chave = j;
+    j++;
   }
 }
 
 void geraAleatorio(TipoItem *A, int n){
   geraCrescente(A, n);
-  Permuta(A, n);
+  embaralhar(A, n);
 }
 
 void geraQuaseOrdenado(TipoItem *A, int n){
   geraCrescente(A, n);
-  Permuta(A, (int) (n * 0.2));
+  embaralhar20(A, n);
 }
 
 int main(int argc, char** argv) {
+
+  int who = RUSAGE_SELF;
+  struct rusage usage;
+  long utotalmicroseg, utotalseg;
 
   char optc = 0;
   struct option OpcoesLongas[] = {
@@ -286,7 +297,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  /*
+  /* TESTES DOS ARGUMENTOS
   printf("A: %d\n", met);
   printf("N: %d\n", n);
   printf("T: %d\n", t);
@@ -294,8 +305,8 @@ int main(int argc, char** argv) {
   printf("R: %d\n", r);
   */
 
-  TipoItem *A = malloc(n * sizeof(TipoItem));
-  TipoItem *B = malloc(n * sizeof(TipoItem));
+  TipoItem *A = malloc((n+1) * sizeof(TipoItem));
+  TipoItem *B = malloc((n+1) * sizeof(TipoItem));
 
   switch(t) {
     case 1:
@@ -315,7 +326,6 @@ int main(int argc, char** argv) {
       exit(0);
   }
 
-  Imprime(A, n);
   Copia(A,B,n);
 
   switch(met) {
@@ -342,8 +352,23 @@ int main(int argc, char** argv) {
       exit(0);
   }
 
-  if (v) Imprime(B, n);
-  if (r) Imprime(A, n);
+  if (v){
+    printf("Vetor Original\n");
+    Imprime(B, n);
+  }
+  if (r){
+    printf("Vetor Ordenado\n");
+    Imprime(A, n);
+  }
+
+  Testa(A,n);
+
+  getrusage(who, &usage);
+  utotalseg = usage.ru_utime.tv_sec; // segundos
+  utotalmicroseg = usage.ru_utime.tv_usec; // microsegundos
+  printf("----------------------------------------------------------------------\n");
+  printf ("Tempo de usuario: %ld segundos e %ld microssegundos.\n", utotalseg, utotalmicroseg);
+  printf("----------------------------------------------------------------------\n");
 
   free(A);
   free(B);
