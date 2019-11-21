@@ -1,12 +1,17 @@
-#include <openssl/rand.h>
+#include <unistd.h>
+#include <getopt.h>
 #include <string.h>
-#include <limits.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <stdio.h>
+#include <time.h>
 
-//se der erro de compilação por culpa dessa biblioteca <openssl/rand.h>
-//use esse comando no teminal
-//sudo apt-get install libssl-dev
+#define U "Bubblesort" // 1
+#define I "Insercao"   // 2
+#define S "Selecao"    // 3
+#define Q "Quicksort"  // 4
+#define H "Heapsort"   // 5
+#define M "Mergesort"  // 6
 
 typedef long TipoChave;
 typedef int TipoIndice;
@@ -188,67 +193,105 @@ void Testa(TipoItem *V, TipoIndice n){
   Imprime(V, n);
 }
 
-double rand0a1(){
-  double resultado =  (double) rand()/ INT_MAX; /* Dividir pelo maior inteiro */
+double aleatorio(){
+  srand(time(NULL));
+  double resultado = (double) rand()/INT_MAX; /* Dividir pelo maior inteiro */
   if(resultado > 1.0){
     resultado = 1.0;
   }
   return resultado;
 }
 
-void Permut(TipoItem *A, int n){
+void Permuta( TipoItem *A, int n){
   int i,j;
   TipoItem b;
-  for(int i = n-1; i>0; i --){
-    j = (i * rand0a1()) + 1 ;
+  for(int i = n-1; i > 0; i--){
+    j = (i * aleatorio()) + 1;
     b = A[i];
     A[i] = A[j];
     A[j] = b;
   }
 }
 
-int main(int argc, char *argv[]){
-  int n = 10, i;
-  TipoItem A[n], B[n];
+void geraCrescente(TipoItem *A, int n){
+  for (int i = 1; i <= n; i++) {
+    A[i].Chave = i;
+  } 
+}
 
-  for (i = 1; i <= n; i++) {
+void geraDecrescente(TipoItem *A, int n){
+  for (int i = n; i >= 1; i--) {
     A[i].Chave = i;
   }
+}
 
-  Permut(A,n);
-  Copia(A,B,n);
- 
-  printf("Desordenado : \n");
-  Imprime(A, n);
+void geraAleatorio(TipoItem *A, int n){
+  geraCrescente(A, n);
+  Permuta(A, n);
+}
 
-  printf("Bubblesort   ");
-  Bubblesort(B, n);
-  Testa(B, n);
-  Copia(A, B, n);
+void geraQuaseOrdenado(TipoItem *A, int n){
+  geraCrescente(A, n);
+  Permuta(A, (int) (n * 0.2));
+}
 
-  printf("Insercao  ");
-  Insercao(B, n);
-  Testa(B, n);
-  Copia(A, B, n);
+int main(int argc, char** argv) {
 
-  printf("Selecao   ");
-  Selecao(B, n);
-  Testa(B, n);
-  Copia(A, B, n);
+  char optc = 0;
+  struct option OpcoesLongas[] = {
+    {"-a", required_argument, NULL, 'a'},
+    {"-n", required_argument, NULL, 'n'},
+    {"-t", required_argument, NULL, 't'},
+    {"-v", required_argument, NULL, 'v'},
+    {"-r", required_argument, NULL, 'r'}
+  };
 
-  printf("Quicksort ");
-  Quicksort(B, n);
-  Testa(B, n);
-  Copia(A, B, n);
+  if(argc < 11) {
+    printf("Parametros faltando\n");
+    exit(0);
+  }
 
-  printf("Heapsort  ");
-  Heapsort(B, n);
-  Testa(B, n);
-  Copia(A, B, n);
+  int met = 0, n = 0, t = 0, v = 0, r = 0;
 
-  printf("Mergesort  ");
-  Mergesort(B, 1, n);
-  Testa(B, n);
+  while((optc = getopt_long(argc, argv, "a:n:t:v:r:", OpcoesLongas, NULL)) != -1) {
+    switch(optc) {
+      case 'a':
+        printf("Metodo: %s\n", optarg);
+        if(strcmp(U, optarg) == 0) met = 1;
+        if(strcmp(I, optarg) == 0) met = 2;
+        if(strcmp(S, optarg) == 0) met = 3;
+        if(strcmp(Q, optarg) == 0) met = 4;
+        if(strcmp(H, optarg) == 0) met = 5;
+        if(strcmp(M, optarg) == 0) met = 6;
+        break;
+      case 'n':
+        printf("Quantidade: %s\n", optarg);
+        n = atoi(optarg);
+        break;
+      case 't':
+        printf("Tipo: %s\n", optarg);
+        t = atoi(optarg);
+        break;
+      case 'v':
+        printf("Imprimir original: %s\n", optarg);
+        if(strcmp("S", optarg) == 0) v = 1;
+        break;
+      case 'r':
+        printf("Imprimir ordenado: %s\n", optarg);
+        if(strcmp("S", optarg) == 0) r = 1;
+        break;
+      default:
+        printf("Parametros incorretos.\n");
+        exit(0);
+    }
+  }
 
-  return 0;
+  /*
+  printf("A: %d\n", met);
+  printf("N: %d\n", n);
+  printf("T: %d\n", t);
+  printf("V: %d\n", v);
+  printf("R: %d\n", r);
+  */
+
 }
