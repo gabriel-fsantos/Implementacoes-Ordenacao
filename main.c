@@ -195,7 +195,7 @@ void Testa(TipoItem *V, TipoIndice n){
 
 double aleatorio(){
   srand(time(NULL));
-  double resultado = (double) rand()/INT_MAX; /* Dividir pelo maior inteiro */
+  double resultado = (double) rand()/INT_MAX;
   if(resultado > 1.0){
     resultado = 1.0;
   }
@@ -294,4 +294,58 @@ int main(int argc, char** argv) {
   printf("R: %d\n", r);
   */
 
+  TipoItem *A = malloc(n * sizeof(TipoItem));
+  TipoItem *B = malloc(n * sizeof(TipoItem));
+
+  switch(t) {
+    case 1:
+      geraCrescente(A, n);
+      break;
+    case 2:
+      geraDecrescente(A, n);
+      break;
+    case 3:
+      geraAleatorio(A, n);
+      break;
+    case 4:
+      geraQuaseOrdenado(A, n);
+      break;
+    default:
+      printf("Argumento Invalido\n");
+      exit(0);
+  }
+
+  Imprime(A, n);
+  Copia(A,B,n);
+
+  switch(met) {
+    case 1:
+      Bubblesort(A, n);
+      break;
+    case 2:
+      Insercao(A, n);
+      break;
+    case 3:
+      Selecao(A, n);
+      break;
+    case 4:
+      Quicksort(A, n);
+      break;
+    case 5:
+      Heapsort(A, n);
+      break;
+    case 6:
+      Mergesort(A, 1, n);
+      break;
+    default:
+      printf("Argumento Invalido\n");
+      exit(0);
+  }
+
+  if (v) Imprime(B, n);
+  if (r) Imprime(A, n);
+
+  free(A);
+  free(B);
+  return 0;
 }
