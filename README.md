@@ -22,16 +22,20 @@
 > -n 100
 - -t: tipo de entrada
 > 1 - em ordem crescente (ordenado)
+
 > 2 - em ordem decrescente
+
 > 3 - aleatório
+
 > 4 - quase ordenado
+
 - -v: imprimir vetor original sim (S) ou não (N)
 > -v S
 - -r: imprimir vetor ordenado sim (S) ou não (N)
 > -r N
 
 ## Exemplo
-> ./a.out -a Quicksort -n 100 -t 1 -v S -r S
+> `./a.out -a Quicksort -n 100 -t 1 -v S -r S`
 
 ## Referências
 - http://www2.dcc.ufmg.br/livros/algoritmos/implementacoes.php
