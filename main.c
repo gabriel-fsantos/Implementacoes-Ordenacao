@@ -1,14 +1,3 @@
-/************************************************
-LAED1 - Trabalho Pratico 2
-Aluno: Gabriel Ferreira dos Santos / Rebeca Larrisa Silva Gaia
-Matricula: 20183025526 / 20183025508
-Descricao do programa: Metodos de Ordenação
-Data: 22/11/2019
-************************************************/
-/* Referências:
-http://www2.dcc.ufmg.br/livros/algoritmos/implementacoes.php
-https://sites.google.com/site/nataliacefetmg/home/aed1_20192
-*/
 #include <sys/resource.h>
 #include <stdlib.h>
 #include <string.h>
